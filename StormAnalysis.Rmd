@@ -1,0 +1,18 @@
+---
+title: "Storm Analysis"
+output: html_document
+---
+
+## Data Processing  
+
+Download the file of the [storm data](http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2); and then unzip it and read the data into a data frame 
+
+```{r cache=TRUE}
+temp <- tempfile();
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", temp, mode="wb")
+data <- read.csv(bzfile(temp))
+unlink(temp)
+```
+
+
+## Results
