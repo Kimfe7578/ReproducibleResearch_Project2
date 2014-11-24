@@ -8,11 +8,215 @@ output: html_document
 Download the file of the [storm data](http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2); and then unzip it and read the data into a data frame 
 
 ```{r cache=TRUE}
+## create a temporary file
 temp <- tempfile();
+## download the compressed bz2 file from web site
 download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", temp, mode="wb")
+## decompress and read the file data to a data frame called "data"
 data <- read.csv(bzfile(temp))
+## delete the temporary file
 unlink(temp)
 ```
 
+Recategorize the event types
+
+```{r cache=TRUE}
+evtypes <- c("ASTRONOMICAL LOW TIDE","AVALANCHE","BLIZZARD","COASTAL FLOOD","COLD/WIND CHILL","DEBRIS FLOW","DENSE FOG","DENSE SMOKE","DROUGHT","DUST DEVIL","DUST STORM","EXCESSIVE HEAT","EXTREME COLD/WIND CHILL","FLASH FLOOD","FLOOD","FROST/FREEZE","FUNNEL CLOUD","FREEZING FOG","HAIL","HEAT","HEAVY RAIN","HEAVY SNOW","HIGH SURF","HIGH WIND","HURRICANE(TYPHOON)","ICE STORM","LAKE EFFECT SNOW","LAKESHORE FLOOD","LIGHTNING","MARINE HAIL","MARINE HIGH WIND","MARINE STRONG WIND","MARINE THUNDERSTORM WIND","RIP CURRENT","SEICHE","SLEET","STORM SURGE/TIDE","STRONG WIND","THUNDERSTORM WIND","TORNADO","TROPICAL DEPRESSION","TROPICAL STORM","TSUNAMI","VOLCANIC ASH","WATERSPOUT","WILDFIRE","WINTER STORM","WINTER WEATHER")
+names(evtypes) <- evtypes
+
+data$EVTYPENEW <- data$EVTYPE
+
+## AVALANCHE
+levels(data$EVTYPENEW)[grepl("AVALANC",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[2]
+## BLIZZARD
+levels(data$EVTYPENEW)[grepl("BLIZZARD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[3] 
+## Coastal flood
+levels(data$EVTYPENEW)[grepl("COASTAL.*FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[4]
+levels(data$EVTYPENEW)[grepl("COASTAL.*SURGE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[4]
+levels(data$EVTYPENEW)[grepl("BEACH FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[4]
+levels(data$EVTYPENEW)[grepl("CSTL FLOODING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <- evtypes[4]
+## COLD/WIND CHILL
+levels(data$EVTYPENEW)[grepl("COLD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[5]
+levels(data$EVTYPENEW)[grepl("WIND CHILL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[5]
+levels(data$EVTYPENEW)[grepl("LOW TEMPERATURE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[5]
+## Dense fog
+levels(data$EVTYPENEW)[grepl("PATCHY DENSE FOG",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[7]
+## Drought
+levels(data$EVTYPENEW)[grepl("DROUGHT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[9]
+levels(data$EVTYPENEW)[grepl("DRY",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[9]
+levels(data$EVTYPENEW)[grepl("BELOW NORMAL PRECIPITATION",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[9]
+## Dust devel
+levels(data$EVTYPENEW)[grepl("DUST.*DEV",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[10]
+## Dust storm
+levels(data$EVTYPENEW)[grepl("DUST.*STORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[11]
+levels(data$EVTYPENEW)[grepl("SAHARAN DUST",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[11]
+levels(data$EVTYPENEW)[grepl("BLOWING DUST",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[11]
+## Excessive heat
+levels(data$EVTYPENEW)[grepl("EXCESSIVE.*HEAT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[12]
+levels(data$EVTYPENEW)[grepl("HIGH TEMPERATURE RECORD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[12]
+levels(data$EVTYPENEW)[grepl("RECORD HEAT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[12]
+levels(data$EVTYPENEW)[grepl("RECORD HIGH",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[12]
+## Extreme code or wind chill
+levels(data$EVTYPENEW)[grepl("EXTREME.*WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[13]
+levels(data$EVTYPENEW)[grepl("RECORD LOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[13]
+## Flash flood
+levels(data$EVTYPENEW)[grepl("FLASH.*FLOO",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[14]
+levels(data$EVTYPENEW)[grepl("BREAKUP FLOODING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[14]
+## Flood
+levels(data$EVTYPENEW)[grepl("^FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("RIVER FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("RURAL FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("URBAN.*FL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("STREAM FL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("STREET FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("TIDAL FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("HIGHWAY FLOODING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("LOCAL FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("MAJOR FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+levels(data$EVTYPENEW)[grepl("MINOR FLOODING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[15]
+## Frost or freeze
+levels(data$EVTYPENEW)[grepl("FROST",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[16]
+levels(data$EVTYPENEW)[grepl("^FREEZE$",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[16]
+levels(data$EVTYPENEW)[grepl("HARD FREEZE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[16]
+## Funnel cloud
+levels(data$EVTYPENEW)[grepl("FUNNEL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[17]
+## Freezing fog
+levels(data$EVTYPENEW)[grepl("^FREEZING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[18]
+## Hail
+levels(data$EVTYPENEW)[grepl("^HAIL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[19]
+levels(data$EVTYPENEW)[grepl("DEEP HAIL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[19]
+levels(data$EVTYPENEW)[grepl("NON SEVERE HAIL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[19]
+levels(data$EVTYPENEW)[grepl("SMALL HAIL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[19]
+## Heat
+levels(data$EVTYPENEW)[grepl("^HEAT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[20]
+levels(data$EVTYPENEW)[grepl("HOT SPELL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[20]
+levels(data$EVTYPENEW)[grepl("HOT WEATHER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[20]
+## Heavy rain
+levels(data$EVTYPENEW)[grepl("HEAVY RAIN",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("HVY RAIN",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("HEAVY PRECIP",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("HEAVY SHOWER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("EXCESSIVE PRECIPITATIO",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("EXCESSIVE.*RAIN.*",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("PROLONGED RAIN",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("RAIN (HEAVY)",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("RAINSTORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("RECORD RAINFALL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("RECORD PRECIPITATION",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+levels(data$EVTYPENEW)[grepl("TORRENTIAL RAIN",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[21]
+## Heavy snow
+levels(data$EVTYPENEW)[grepl("HEAVY SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+levels(data$EVTYPENEW)[grepl("HEAVY WET SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+levels(data$EVTYPENEW)[grepl("RECORD SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+levels(data$EVTYPENEW)[grepl("SNOW SQUALL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+levels(data$EVTYPENEW)[grepl("SNOWFALL RECORD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+levels(data$EVTYPENEW)[grepl("BLOWING SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[22]
+## High surf
+levels(data$EVTYPENEW)[grepl("HEAVY SURF",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+levels(data$EVTYPENEW)[grepl("HEAVY SEAS",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+levels(data$EVTYPENEW)[grepl("HIGH SURF",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+levels(data$EVTYPENEW)[grepl("HIGH SEAS",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+levels(data$EVTYPENEW)[grepl("HIGH WAVES",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+levels(data$EVTYPENEW)[grepl("HAZARDOUS SURF",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[23]
+## High wind
+levels(data$EVTYPENEW)[grepl("^HIGH.*WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[24]
+## Hurricane (typhoon)
+levels(data$EVTYPENEW)[grepl("HURRICANE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[25]
+levels(data$EVTYPENEW)[grepl("TYPHOON",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[25]
+levels(data$EVTYPENEW)[grepl("COASTAL.*STORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[25]
+## Ice storm
+levels(data$EVTYPENEW)[grepl("^ICE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[26]
+levels(data$EVTYPENEW)[grepl("GLAZE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[26]
+## Lake effect snow
+levels(data$EVTYPENEW)[grepl("LAKE.*EFFECT SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[27]
+levels(data$EVTYPENEW)[grepl("HEAVY LAKE SNOW",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[27]
+## lake shore flood
+levels(data$EVTYPENEW)[grepl("LAKE.*FLOOD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[28]
+## Lightning
+levels(data$EVTYPENEW)[grepl("LIG.*ING",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[29]
+## Marine hail
+levels(data$EVTYPENEW)[grepl("MARINE HAIL",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[30]
+## Marine high wind
+levels(data$EVTYPENEW)[grepl("MARINE HIGH WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[31]
+## Marine strong wind
+levels(data$EVTYPENEW)[grepl("MARINE STRONG WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[32]
+## Marine thunderstorm wind
+levels(data$EVTYPENEW)[grepl("MARINE THUNDERSTORM WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[33]
+levels(data$EVTYPENEW)[grepl("MARINE TSTM WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[33]
+## Rip current
+levels(data$EVTYPENEW)[grepl("RIP CURRENT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[34]
+## Seiche
+levels(data$EVTYPENEW)[grepl("SEICHE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[35]
+## Sleet
+levels(data$EVTYPENEW)[grepl("SLEET",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[36]
+## Storm surge or tide
+levels(data$EVTYPENEW)[grepl("STORM SURGE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("BLOW-OUT TIDE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("RAPIDLY RISING WATER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("HEAVY SWELLS",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("HIGH.*SWELLS",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("HIGH TIDES",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+levels(data$EVTYPENEW)[grepl("HIGH WATER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[37]
+## Strong wind
+levels(data$EVTYPENEW)[grepl("STRONG WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[38]
+levels(data$EVTYPENEW)[grepl("GUSTNADO",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[38]
+levels(data$EVTYPENEW)[grepl("DOWNBURST",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[38]
+levels(data$EVTYPENEW)[grepl("GUSTY WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[38]
+## Thunderstorm wind
+levels(data$EVTYPENEW)[grepl("^THU",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[39]
+levels(data$EVTYPENEW)[grepl("^TUNDERSTORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[39]
+levels(data$EVTYPENEW)[grepl("^TSTM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[39]
+levels(data$EVTYPENEW)[grepl("TSTM WIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[39]
+levels(data$EVTYPENEW)[grepl("SEVERE THUNDERSTORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[39]
+## Tornado
+levels(data$EVTYPENEW)[grepl("^TORN",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[40]
+levels(data$EVTYPENEW)[grepl("WHIRLWIND",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[40]
+## Tropical depression
+levels(data$EVTYPENEW)[grepl("TROPICAL DEPRESSION",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[41]
+## TROPICAL STORM
+levels(data$EVTYPENEW)[grepl("TROPICAL STORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[42]
+## TSUNAMI
+levels(data$EVTYPENEW)[grepl("TSUNAMI",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[43]
+## VOLCANIC ASH
+levels(data$EVTYPENEW)[grepl("VOLCANIC",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[44]
+## WATERSPOUT
+levels(data$EVTYPENEW)[grepl("WA.*SPOUT",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[45]
+## Wildfire
+levels(data$EVTYPENEW)[grepl("WILD",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[46]
+levels(data$EVTYPENEW)[grepl("FOREST FIRES",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[46]
+levels(data$EVTYPENEW)[grepl("BRUSH FIRE",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[46]
+levels(data$EVTYPENEW)[grepl("GRASS FIRES",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[46]
+## Winter storm
+levels(data$EVTYPENEW)[grepl("WINTER STORM",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[47]
+## Winter weather
+levels(data$EVTYPENEW)[grepl("WINTER WEATHER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[48]
+
+shouldBecomeOther <- !(data$EVTYPENEW %in% evtypes)
+tmp <- as.character(data$EVTYPENEW)
+tmp[shouldBecomeOther] <- "Other"
+data$EVTYPENEW <- factor(tmp)
+```
+
+```{r}
+
+```
+
+
+
+## Data Analysis
+
+### Question 1:  
+### Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
+
+
+
+
+### Question 2: 
+### Across the United States, which types of events have the greatest economic consequences?
+
 
 ## Results
+```{r}
+
+```
+
