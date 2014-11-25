@@ -191,25 +191,31 @@ levels(data$EVTYPENEW)[grepl("WINTER STORM",levels(data$EVTYPENEW), ignore.case=
 ## Winter weather
 levels(data$EVTYPENEW)[grepl("WINTER WEATHER",levels(data$EVTYPENEW), ignore.case=TRUE, perl=TRUE)] <-  evtypes[48]
 
-shouldBecomeOther <- !(data$EVTYPENEW %in% evtypes)
+## create the new "Other" event type to the rest of the events
+other <- !(data$EVTYPENEW %in% evtypes)
 tmp <- as.character(data$EVTYPENEW)
-tmp[shouldBecomeOther] <- "Other"
+tmp[other] <- "Other"
 data$EVTYPENEW <- factor(tmp)
 ```
-
-```{r}
-
-```
-
-
 
 ## Data Analysis
 
 ### Question 1:  
 ### Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
 
+**calculate the total fatalities and injuries by the new event types
 
+```{r}
+casualties <- aggregate(FATALITIES + INJURIES ~ EVTYPENEW,data=data, sum)
+names(casualties) <- c("EVTYPENEW","CASAULTIES")
+highestCasualties <- casualties[casualties$CASAULTIES==max(casualties$CASAULTIES),]
 
+#install.packages("ggplot2")
+library(ggplot2)
+ggplot(casualties, aes(x=EVTYPENEW, y=CASAULTIES)) + geom_bar(stat="identity") + labs(title="Total Casualties in the USA by Storm Type from 1950 to 2011", x="Storm Type", y="Casualty (Fatality + Injury) Count") + theme(axis.text.x = element_text(angle = 90, vjust = 0))
+```
+
+**The storm with highest rate of casualties is** *`r highestCasualties$EVTYPENEW`*  
 
 ### Question 2: 
 ### Across the United States, which types of events have the greatest economic consequences?
